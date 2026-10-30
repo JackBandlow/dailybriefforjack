@@ -28,7 +28,7 @@ a{color:inherit}
 .serif{font-family:Georgia,"Times New Roman",serif}
 .skip{position:absolute;left:-999px}.skip:focus{left:12px;top:12px;background:var(--surface);padding:8px 12px;z-index:10}
 :focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
-header.top{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+header.top{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;padding:18px 0}
 .logo{display:flex;align-items:center;gap:10px;font-weight:700;text-decoration:none}
 .logo span.mark{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;background:var(--ink);color:var(--gold);font:700 15px Georgia,serif}
 .top nav a{margin-left:18px;text-decoration:none;color:var(--muted);font-size:15px}
@@ -111,7 +111,7 @@ footer a{color:var(--ink)}
 <div class="wrap">
 <header class="top">
   <a class="logo" href="#" aria-label="Daily Brief for Jack, home"><span class="mark" aria-hidden="true">DB</span><span>Daily Brief for Jack</span></a>
-  <nav aria-label="Sections"><a href="#topics">Topics</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
+  <nav aria-label="Sections"><a href="/today.html">Today&rsquo;s Brief</a><a href="/archive.html">Archive</a><a href="#topics">Topics</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
 </header>
 
 <main id="main">
