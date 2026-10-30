@@ -52,6 +52,15 @@ details.pre{margin:14px auto 0;text-align:left;max-width:620px;font-size:15px}
 details.pre summary{cursor:pointer;color:var(--muted);text-align:center;list-style:none}
 details.pre summary::-webkit-details-marker{display:none}
 details.pre summary::after{content:" ▾"}
+.more{display:none;margin:14px auto 0;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.more.open{display:block}.more .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.more label.f{display:block;font-size:14px;color:var(--muted);margin:10px 0 0}
+.more input[type=text],.more textarea{display:block;width:100%;box-sizing:border-box;margin-top:4px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--ink);font:inherit;font-size:16px;padding:11px 12px}
+.more input:focus,.more textarea:focus{outline:2px solid var(--accent);border-color:transparent}
+.more textarea{min-height:70px;resize:vertical}.more .tp{margin:14px 0 0;font-size:14px;color:var(--muted)}
+.more button.go{margin-top:16px;width:100%;border:0;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:1.1rem;padding:15px;border-radius:12px;cursor:pointer}
+.more button.go[disabled]{opacity:.6;cursor:wait}
+@media(max-width:540px){.more .row{grid-template-columns:1fr}}
 .checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:12px}
 .checks label{display:flex;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer;font-size:14px}
 .checks input{accent-color:var(--accent);width:18px;height:18px}
@@ -114,14 +123,10 @@ footer a{color:var(--ink)}
     <label for="email1" class="hp">Email address</label>
     <div class="field">
       <input id="email1" type="email" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required aria-describedby="fine1">
-      <button type="submit">Subscribe</button>
+      <button type="submit">Continue</button>
     </div>
     <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
-    <details class="pre">
-      <summary>Choose topics now (optional)</summary>
-      <fieldset class="checks" style="border:0;padding:0;margin:12px 0 0"><legend class="hp">Topics</legend></fieldset>
-    </details>
-    <p class="fine" id="fine1">Free. No ads. One click to unsubscribe. Your email is never sold or shared.</p>
+    <p class="fine" id="fine1">Free. One click to unsubscribe.</p>
     <div class="msg" role="status" aria-live="polite"></div>
   </form>
   <div class="trust"><span>2+ sources per item</span><span>No filler</span><span>Monday covers the weekend</span></div>
@@ -185,10 +190,9 @@ footer a{color:var(--ink)}
 <section id="faq" aria-labelledby="faq-h">
   <h2 id="faq-h">FAQ</h2>
   <div class="faq">
-    <details><summary>Is it free?</summary><p>Yes. It's free, with no ads and no paid tier.</p></details>
+    <details><summary>Is it free?</summary><p>Yes. It is free.</p></details>
     <details><summary>How do I change my topics?</summary><p>Reply to any issue with the topics you want (for example "AI, Business, Science"), or use the "Change topics" link at the bottom of every email.</p></details>
     <details><summary>How do I unsubscribe?</summary><p>Click the one-click "Unsubscribe" link in every email, or reply with "unsubscribe".</p></details>
-    <details><summary>What do you do with my email?</summary><p>Your email is used only to send the Daily Brief. It is never sold or shared.</p></details>
     <details><summary>When does it arrive?</summary><p>Early every weekday morning, Eastern time. Monday's issue covers the weekend.</p></details>
   </div>
 </section>
@@ -200,7 +204,7 @@ footer a{color:var(--ink)}
     <label for="email2" class="hp">Email address</label>
     <div class="field">
       <input id="email2" type="email" name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required>
-      <button type="submit">Subscribe</button>
+      <button type="submit">Continue</button>
     </div>
     <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
     <div class="msg" role="status" aria-live="polite"></div>
@@ -217,7 +221,14 @@ footer a{color:var(--ink)}
 <script>
 (function(){
   "use strict";
-  var APPS_SCRIPT_URL = 'REPLACE_WITH_WEB_APP_URL';
+  // Kit form (Free plan). Fill in after creating the form in Kit (Grow > Landing Pages & Forms, double opt-in ON):
+  //   KIT_FORM_ACTION = 'https://app.kit.com/forms/<FORM_ID>/subscriptions'
+  //   KIT_TAG_IDS: Kit tag id per topic (from `kit_admin.py create-tags --apply` output / GET /v4/tags).
+  // Kit form "Newsletter site" (id 10121423). Double opt-in must be ON in that form's settings.
+  var KIT_FORM_ID = '10121423';
+  var KIT_FORM_ACTION = 'https://app.kit.com/forms/' + KIT_FORM_ID + '/subscriptions';
+  var KIT_TAG_IDS = { "US":25214593,"Politics & Elections":25214594,"Business":25214595,"AI":25214596,"Tech":25214597,"Law & Courts":25214599,"Global":25214600,
+    "Security & Intelligence":25214601,"Construction, Infrastructure & Manufacturing":25214602,"Science & Health":25214603,"Energy & Climate":25214604,"Level Up":25214605 };
   var TOPICS = [
     ["US","National news: government, courts, economy and major events across the country."],
     ["Politics & Elections","Campaigns, polling, legislation and the people and parties shaping policy."],
@@ -234,43 +245,68 @@ footer a{color:var(--ink)}
   ];
   var DEFAULTS = ["US","Business","AI","Global"];
   var grid = document.getElementById('topicGrid');
-  var checks = document.querySelector('#signup .checks');
-  TOPICS.forEach(function(t, i){
+  TOPICS.forEach(function(t){
     var c = document.createElement('div'); c.className = 'card';
     c.innerHTML = (DEFAULTS.indexOf(t[0])>=0?'<span class="badge">Default</span>':'') + '<h3></h3><p></p>';
     c.querySelector('h3').textContent = t[0]; c.querySelector('p').textContent = t[1];
     grid.appendChild(c);
-    var l = document.createElement('label');
-    l.innerHTML = '<input type="checkbox" name="topic"> <span></span>';
-    l.querySelector('input').value = t[0];
-    l.querySelector('input').checked = DEFAULTS.indexOf(t[0])>=0;
-    l.querySelector('span').textContent = t[0];
-    checks.appendChild(l);
   });
+  // Step 2 panel (same for both forms): about you + topics. Nothing is sent until "Subscribe".
+  function buildMore(form, n){
+    var m = document.createElement('div'); m.className = 'more';
+    m.innerHTML =
+      '<div class="row"><label class="f">First name *<input type="text" name="first_name" autocomplete="given-name" maxlength="60" required></label>' +
+      '<label class="f">Last name *<input type="text" name="last_name" autocomplete="family-name" maxlength="60" required></label></div>' +
+      '<label class="f">Occupation *<input type="text" name="occupation" autocomplete="organization-title" maxlength="100" placeholder="e.g. Project manager, student, retired" required></label>' +
+      '<label class="f">Anything else we should know, or what do you hope to get from it? (optional)<textarea name="notes" maxlength="500" rows="3"></textarea></label>' +
+      '<p class="tp">Your topics (change any time):</p><div class="checks"></div>' +
+      '<button type="submit" class="go">Subscribe</button>';
+    var ch = m.querySelector('.checks');
+    TOPICS.forEach(function(t, i){
+      var l = document.createElement('label');
+      l.innerHTML = '<input type="checkbox" name="topic"> <span></span>';
+      l.querySelector('input').value = t[0]; l.querySelector('input').checked = DEFAULTS.indexOf(t[0])>=0;
+      l.querySelector('span').textContent = t[0]; ch.appendChild(l);
+    });
+    form.insertBefore(m, form.querySelector('.fine') || form.querySelector('.msg'));
+    return m;
+  }
   var RE = /^[^\s@<>()",;:]+@[^\s@<>()",;:]+\.[A-Za-z]{2,}$/;
   function show(box, cls, text){ box.className = 'msg show ' + cls; box.textContent = text; }
   function handle(form){
+    var more = buildMore(form);
     form.addEventListener('submit', function(ev){
       ev.preventDefault();
       var input = form.querySelector('input[type=email]');
-      var btn = form.querySelector('button');
-      var box = form.querySelector('.msg');
+      var box = form.querySelector('.msg'); box.className = 'msg';
       var email = (input.value || '').trim();
       if (!RE.test(email) || email.length > 254) { show(box,'err','Please enter a valid email address.'); input.focus(); return; }
-      var payload = { action:'signup', email: email, website: form.querySelector('input[name=website]').value || '' };
-      var picked = Array.prototype.map.call(document.querySelectorAll('#signup input[name=topic]:checked'), function(x){return x.value;});
-      if (picked.length) payload.topics = picked;
-      if (APPS_SCRIPT_URL.indexOf('REPLACE_') === 0) { show(box,'err','Signups open soon. Please check back shortly.'); return; }
-      btn.disabled = true; var old = btn.textContent; btn.textContent = 'Sending…';
-      fetch(APPS_SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload) })
+      if (!more.classList.contains('open')) {           // step 1 -> reveal step 2
+        more.classList.add('open'); form.querySelector('.field button').style.display = 'none';
+        more.querySelector('input[name=first_name]').focus(); return;
+      }
+      if (form.querySelector('input[name=website]').value) { return; } // honeypot
+      var v = function(n){ return (more.querySelector('[name='+n+']').value || '').trim(); };
+      var need = [['first_name','first name'],['last_name','last name'],['occupation','occupation']];
+      for (var i=0;i<need.length;i++) if (!v(need[i][0])) { show(box,'err','Please add your '+need[i][1]+'.'); more.querySelector('[name='+need[i][0]+']').focus(); return; }
+      var picked = Array.prototype.map.call(more.querySelectorAll('input[name=topic]:checked'), function(x){return x.value;});
+      if (!picked.length) picked = DEFAULTS.slice();
+      var body = new URLSearchParams();
+      body.append('email_address', email);
+      body.append('first_name', v('first_name')); body.append('fields[first_name]', v('first_name'));
+      body.append('fields[last_name]', v('last_name'));
+      body.append('fields[occupation]', v('occupation'));
+      body.append('fields[notes]', v('notes'));
+      body.append('fields[signup_source]', 'website ' + new Date().toISOString().slice(0,10) + ' (' + form.id + ')');
+      picked.forEach(function(t){ if (KIT_TAG_IDS[t]) body.append('tags[]', String(KIT_TAG_IDS[t])); });
+      if (window.DB_DRY_RUN) { window.DB_LAST = body.toString(); show(box,'ok','DRY RUN: '+body.toString()); return; }
+      var btn = more.querySelector('button.go'); btn.disabled = true; var old = btn.textContent; btn.textContent = 'Sending…';
+      fetch(KIT_FORM_ACTION, { method:'POST', mode:'no-cors', body: body })
         .then(function(){
-          form.querySelector('.field').style.display = 'none';
-          var pre = form.querySelector('details'); if (pre) pre.style.display = 'none';
-          show(box,'ok',"Almost done! Check your inbox for a confirmation link from dailybriefforjack@gmail.com. If you don't see it in a few minutes, check spam or promotions.");
+          form.querySelector('.field').style.display = 'none'; more.style.display = 'none';
+          show(box,'ok',"Almost done! Check your inbox for a confirmation link from jack@dailybriefforjack.com. If you don't see it in a few minutes, check spam or promotions.");
         })
-        .catch(function(){
-          show(box,'err','Something went wrong. Please try again in a minute, or email dailybriefforjack@gmail.com.');
-        })
+        .catch(function(){ show(box,'err','Something went wrong. Please try again in a minute.'); })
         .finally(function(){ btn.disabled = false; btn.textContent = old; });
     });
   }
