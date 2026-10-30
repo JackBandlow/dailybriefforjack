@@ -1,0 +1,29 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>Change topics - Daily Brief for Jack</title>
+<style>body{font:16px/1.5 Georgia,serif;max-width:560px;margin:32px auto;padding:0 16px;color:#222}h1{font-size:26px}label.f{display:block;margin:14px 0 6px;font-weight:bold}
+input[type=email]{width:100%;padding:10px;font-size:16px;box-sizing:border-box}.checks label{display:block;padding:6px 0}
+button{background:#1a3d6d;color:#fff;border:0;padding:12px 20px;font-size:16px;border-radius:6px;cursor:pointer;margin-top:14px}
+.msg{margin-top:16px;padding:12px;border-radius:6px;display:none}.msg.show{display:block;background:#eef5ee}.small{font-size:13px;color:#666;margin-top:24px}a{color:#1a3d6d}</style></head><body>
+<h1>Change your topics</h1>
+<p>Tick the topics you want in your daily email.</p>
+<form id="f"><label class="f" for="e">Your email</label><input type="email" id="e" required autocomplete="email">
+<div class="checks" id="c"></div>
+<button type="submit">Save changes</button><div class="msg" id="m"></div></form>
+<p class="small">Want out entirely? Use the Unsubscribe link at the bottom of any email.<br>Daily Brief for Jack is compiled automatically from published news sources using automated tools. Nothing here is the opinion, belief, or statement of its owner. <a href="/">Home</a></p>
+<script>
+var T=[["US", 25214593], ["Politics & Elections", 25214594], ["Business", 25214595], ["AI", 25214596], ["Tech", 25214597], ["Law & Courts", 25214599], ["Global", 25214600], ["Security & Intelligence", 25214601], ["Construction, Infrastructure & Manufacturing", 25214602], ["Science & Health", 25214603], ["Energy & Climate", 25214604], ["Level Up", 25214605]], DEF=["US","Business","AI","Global"];
+var c=document.getElementById('c'),q=new URLSearchParams(location.search);
+T.forEach(function(t){var l=document.createElement('label');l.innerHTML='<input type="checkbox"> <span></span>';var i=l.querySelector('input');i.value=t[0];i.checked=DEF.indexOf(t[0])>=0;l.querySelector('span').textContent=t[0];c.appendChild(l);});
+if(q.get('e'))document.getElementById('e').value=q.get('e');
+document.getElementById('f').addEventListener('submit',function(ev){ev.preventDefault();
+ var em=document.getElementById('e').value.trim(),m=document.getElementById('m');
+ var on=[],off=[];Array.prototype.forEach.call(c.querySelectorAll('input'),function(i){(i.checked?on:off).push(i.value);});
+ if(!on.length){m.className='msg show';m.textContent='Pick at least one topic, or use Unsubscribe in your email.';return;}
+ var b=new URLSearchParams();b.append('email_address',em);
+ T.forEach(function(t){if(on.indexOf(t[0])>=0)b.append('tags[]',String(t[1]));});
+ fetch('https://app.kit.com/forms/10121423/subscriptions',{method:'POST',mode:'no-cors',body:b}).then(function(){
+  var h='Added: '+on.join(', ')+'.';
+  if(off.length){var s=encodeURIComponent('Remove topics'),bd=encodeURIComponent('Please remove these topics from '+em+':\n'+off.join('\n'));
+   h+=' To stop receiving the unticked topics, <a href="mailto:jack@dailybriefforjack.com?subject='+s+'&body='+bd+'">tap here to send a one-line removal email</a>.';}
+  m.className='msg show';m.innerHTML=h;}).catch(function(){m.className='msg show';m.textContent='Something went wrong. Please try again.';});});
+</script></body></html>
