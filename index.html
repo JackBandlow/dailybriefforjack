@@ -111,7 +111,7 @@ footer a{color:var(--ink)}
 <div class="wrap">
 <header class="top">
   <a class="logo" href="#" aria-label="Daily Brief for Jack, home"><span class="mark" aria-hidden="true">DB</span><span>Daily Brief for Jack</span></a>
-  <nav aria-label="Sections"><a href="/today.html">Today&rsquo;s Brief</a><a href="/archive.html">Archive</a><a href="#topics">Topics</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
+  <nav aria-label="Sections"><a href="/today.html">Today&rsquo;s Brief</a><a href="/archive.html">Archive</a><a href="https://www.youtube.com/@dailybriefforjack">Listen</a><a href="#topics">Topics</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
 </header>
 
 <main id="main">
@@ -252,6 +252,10 @@ footer a{color:var(--ink)}
     c.querySelector('h3').textContent = t[0]; c.querySelector('p').textContent = t[1];
     grid.appendChild(c);
   });
+  // Learn is always included for everyone (not a selectable topic, no Kit tag)
+  (function(){ var c = document.createElement('div'); c.className = 'card';
+    c.innerHTML = '<span class="badge">Always included</span><h3>Learn</h3><p>Three advanced concepts a day, explained simply in five sentences or less. Fields rotate: AI, law, construction &amp; engineering, finance, science &amp; technology.</p>';
+    grid.appendChild(c); })();
   // Step 2 panel (same for both forms): about you + topics. Nothing is sent until "Subscribe".
   function buildMore(form, n){
     var m = document.createElement('div'); m.className = 'more';
