@@ -1,5 +1,23 @@
 [
  {
+  "date": "2026-11-25",
+  "label": "Wednesday, November 25, 2026",
+  "subject": "Daily Brief - Wed, Nov 25",
+  "kind": "daily"
+ },
+ {
+  "date": "2026-11-24",
+  "label": "Tuesday, November 24, 2026 (Corrected)",
+  "subject": "Daily Brief - Tue, Nov 24",
+  "kind": "daily"
+ },
+ {
+  "date": "2026-11-23",
+  "label": "Monday, November 23, 2026",
+  "subject": "Daily Brief - Mon, Nov 23",
+  "kind": "daily"
+ },
+ {
   "date": "2026-11-20",
   "label": "Friday, November 20, 2026",
   "subject": "Daily Brief - Fri, Nov 20",
