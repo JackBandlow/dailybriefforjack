@@ -166,8 +166,8 @@ footer a{color:var(--ink)}
   <p class="lede">Three steps, about thirty seconds.</p>
   <div class="steps">
     <div class="step"><h3>Enter your email</h3><p>Type your address above and press Subscribe.</p></div>
-    <div class="step"><h3>Confirm it</h3><p>Click the confirmation link we email you. That's how we know it's really you.</p></div>
-    <div class="step"><h3>Choose your topics</h3><p>Tick your topics on the page that opens, or just reply to any email with the topics you want.</p></div>
+    <div class="step"><h3>Choose your topics</h3><p>Tick your topics before you press Subscribe, or reply to any email later to change them.</p></div>
+    <div class="step"><h3>Read it at 6 AM</h3><p>That's it, there is no confirmation step. Your first brief arrives the next weekday at 6 AM ET.</p></div>
   </div>
 </section>
 
@@ -227,10 +227,10 @@ footer a{color:var(--ink)}
 <script>
 (function(){
   "use strict";
-  // Kit form (Free plan). Fill in after creating the form in Kit (Grow > Landing Pages & Forms, double opt-in ON):
+  // Kit form (Free plan). Fill in after creating the form in Kit (Grow > Landing Pages & Forms):
   //   KIT_FORM_ACTION = 'https://app.kit.com/forms/<FORM_ID>/subscriptions'
   //   KIT_TAG_IDS: Kit tag id per topic (from `kit_admin.py create-tags --apply` output / GET /v4/tags).
-  // Kit form "Newsletter site" (id 10121423). Double opt-in must be ON in that form's settings.
+  // Kit form "Newsletter site" (id 10121423). Single opt-in (Jack, 2026-11-26): Kit auto-confirm ON, confirmation email OFF.
   var KIT_FORM_ID = '10121423';
   var KIT_FORM_ACTION = 'https://app.kit.com/forms/' + KIT_FORM_ID + '/subscriptions';
   var KIT_TAG_IDS = { "US":25214593,"Politics & Elections":25214594,"Business":25214595,"AI":25214596,"Tech":25214597,"Law & Courts":25214599,"Global":25214600,
@@ -314,7 +314,7 @@ footer a{color:var(--ink)}
       fetch(KIT_FORM_ACTION, { method:'POST', mode:'no-cors', body: body })
         .then(function(){
           form.querySelector('.field').style.display = 'none'; more.style.display = 'none';
-          show(box,'ok',"Almost done! Check your inbox for a confirmation link from jack@dailybriefforjack.com. If you don't see it in a few minutes, check spam or promotions.");
+          show(box,'ok',"You're in! Your first brief arrives the next weekday at 6 AM ET from jack@dailybriefforjack.com. If you don't see it, check spam or promotions.");
         })
         .catch(function(){ show(box,'err','Something went wrong. Please try again in a minute.'); })
         .finally(function(){ btn.disabled = false; btn.textContent = old; });
